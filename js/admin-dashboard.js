@@ -49,7 +49,7 @@ async function loadAdmin() {
     // show dashboard only after auth success
     pageBody.classList.remove("hidden");
 
-    console.log(data);
+   // console.log(data);
 
     adminName.innerText = `Welcome ${data.data?.username || "Admin"}`;
 
