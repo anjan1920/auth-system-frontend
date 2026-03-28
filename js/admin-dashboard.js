@@ -164,7 +164,7 @@ async function loadUsers() {
 
       html += `
         <div class="border-b border-gray-700 pb-2">
-          <p>Email: ${user.email}</p>
+          <p>UserName: ${user.username}</p>
           <p>Verified: ${user.isEmailVerified ? "✔ Yes" : "❌ No"}</p>
         </div>
       `;
