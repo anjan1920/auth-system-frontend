@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html class="h-full bg-neutral-900">
+<head>
+  <title>Admin Login</title>
+  <link href="../src/output.css" rel="stylesheet">
+</head>
+
+<body class="h-full">
+
+<div id="loader" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+  <div class="w-10 h-10 border-4 border-gray-300 border-t-amber-500 rounded-full animate-spin"></div>
+</div>
+
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <h2 class="mt-10 text-center text-2xl font-bold text-white">
+      Admin Login
+    </h2>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <p id="errorMsg" class="text-red-400 text-sm text-center"></p>
+
+    <form id="adminLoginForm" class="space-y-6">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-100">Admin Email</label>
+        <input id="email" type="email" required
+        class="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-white/10">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-100">Password</label>
+        <input id="password" type="password" required
+        class="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-white/10">
+      </div>
+
+      <button type="submit"
+      class="w-full rounded-md bg-amber-500 py-2 text-white hover:bg-amber-400">
+        Sign in as Admin
+      </button>
+
+      <p class="mt-2 text-center text-sm text-gray-400">
+        Forgot password?
+        <a href="./forgot-password.html" class="text-amber-400">Reset here</a>
+        <p class="mt-2 text-center text-sm text-gray-400">
+        Not an admin?
+        <a href="./index.html" class="text-amber-400">Login here</a>
+      </p>
+
+    </form>
+
+  </div>
+</div>
+
+<script type="module" src="../js/admin-login.js"></script>
+
+</body>
+</html>

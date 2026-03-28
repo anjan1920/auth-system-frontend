@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class="h-full bg-neutral-900">
+<head>
+  <title>Admin Dashboard</title>
+  <link href="../src/output.css" rel="stylesheet">
+</head>
+
+<body class="h-full text-gray-200 hidden" id="pageBody">
+
+<div class="max-w-5xl mx-auto py-10 px-6">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+    <button id="logoutBtn"
+      class="bg-red-500 px-4 py-2 rounded hover:bg-red-400">
+      Logout
+    </button>
+  </div>
+
+  <!-- Admin Info -->
+  <div class="bg-neutral-800 rounded-lg p-6 mb-6">
+    <h2 class="text-lg font-semibold mb-2">Admin Info</h2>
+    <p id="adminName" class="text-gray-300">Loading...</p>
+  </div>
+
+  <!-- Actions -->
+  <div class="grid grid-cols-2 gap-4 mb-6">
+
+    <button id="changePasswordBtn"
+      class="bg-amber-500 py-3 rounded hover:bg-amber-400">
+      Change Password
+    </button>
+
+    <button id="checkUsersBtn"
+      class="bg-amber-500 py-3 rounded hover:bg-amber-400">
+      View Users
+    </button>
+
+    <button id="serverHealthBtn"
+      class="bg-amber-500 py-3 rounded hover:bg-amber-400">
+      Server Health
+    </button>
+
+  </div>
+
+  <!-- Dynamic Display Box -->
+    <div id="displayBox"
+    class="bg-neutral-800 rounded-lg p-6 hidden h-50 overflow-y-auto">
+    </div>
+  <!-- Danger Zone -->
+  <div class="mt-10 border-t border-red-600 pt-6">
+    <h2 class="text-red-500 font-semibold mb-4">Danger Zone</h2>
+
+    <button id="deleteAccountBtn"
+      class="bg-red-600 px-4 py-2 rounded hover:bg-red-500">
+      Delete Account
+    </button>
+  </div>
+
+</div>
+
+<script type="module" src="../js/admin-dashboard.js"></script>
+
+</body>
+</html>

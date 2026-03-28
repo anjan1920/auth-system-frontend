@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-900">
+<head>
+  <title>Dashboard</title>
+  <link href="../src/output.css" rel="stylesheet">
+</head>
+
+<body class="h-full">
+
+<!DOCTYPE html>
+
+<html class="h-full bg-gray-900">
+<head>
+  <title>Dashboard</title>
+  <link href="../src/output.css" rel="stylesheet">
+</head>
+
+<body class="h-full">
+
+<div class="min-h-full">
+
+  <!-- Navbar -->
+
+  <nav class="bg-gray-800 px-6 py-4 flex justify-between items-center">
+
+
+<h1 class="text-white font-bold text-lg">
+  User Dashboard
+</h1>
+
+<button id="logoutBtn"
+class="bg-red-500 px-4 py-2 rounded-md text-sm hover:bg-red-400">
+  Logout
+</button>
+
+
+  </nav>
+
+  <!-- Main Content -->
+
+  <main class="flex justify-center items-center py-20">
+
+
+<div class="bg-gray-800 rounded-lg shadow-lg p-8 w-96 text-center space-y-6">
+
+  <!-- User Info -->
+  <div>
+
+    <h2 class="text-xl font-semibold mb-4">
+      Welcome 👋
+    </h2>
+
+    <p id="userName" class="text-indigo-400 text-lg"></p>
+
+    <p id="email" class="text-gray-300 text-sm mt-2"></p>
+
+    
+
+  </div>
+
+
+  <!-- Change Password -->
+  <div class="border-t border-gray-700 pt-6">
+
+    <h3 class="text-lg font-semibold mb-4 text-white">
+      Change Password
+    </h3>
+
+    <input id="oldPassword"
+    type="password"
+    placeholder="Old Password"
+    class="w-full mb-3 px-3 py-2 rounded bg-gray-700 text-white">
+
+    <input id="newPassword"
+    type="password"
+    placeholder="New Password"
+    class="w-full mb-3 px-3 py-2 rounded bg-gray-700 text-white">
+
+    <button id="changePasswordBtn"
+    class="bg-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-500 text-sm">
+      Change Password
+    </button>
+
+  </div>
+
+
+  <!-- Delete Account -->
+  <div class="border-t border-gray-700 pt-6">
+
+    <h3 class="text-lg font-semibold mb-4 text-red-400">
+      Danger Zone
+    </h3>
+
+    <button id="deleteAccountBtn"
+    class="bg-red-600 px-4 py-2 rounded-md hover:bg-red-500 text-sm">
+      Delete Account
+    </button>
+    
+
+  </div>
+
+</div>
+
+
+  </main>
+
+</div>
+
+<script type="module" src="../js/dashboard.js"></script>
+</body>
+</html>
+
+

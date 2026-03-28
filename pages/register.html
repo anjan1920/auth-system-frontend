@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-900">
+<head>
+  <title>Register</title>
+  <link href="../src/output.css" rel="stylesheet">
+</head>
+
+<body class="h-full">
+
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <h2 class="mt-10 text-center text-2xl font-bold text-white">
+      Create Account
+    </h2>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+
+    <p id="errorMsg" class="text-red-400 text-sm text-center mb-3"></p>
+
+    <form id="registerForm" class="space-y-6">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-100">Full Name</label>
+        <input id="name" type="text" required
+        class="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-white/10">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-100">Email</label>
+        <input id="email" type="email" required
+        class="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-white/10">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-100">Password</label>
+        <input id="password" type="password" required
+        class="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-white/10">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-100">Confirm Password</label>
+        <input id="confirmPassword" type="password" required
+        class="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-white/10">
+      </div>
+
+      <button id="registerBtn" type="submit"
+        class="w-full flex justify-center items-center gap-2 rounded-md bg-indigo-500 py-2 text-white hover:bg-indigo-400">
+
+        <span id="btnText">Register</span>
+
+        <svg id="loader" class="hidden animate-spin h-4 w-4 text-white"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+
+            <circle class="opacity-25" cx="12" cy="12" r="10"
+            stroke="currentColor" stroke-width="4"></circle>
+
+            <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8v4l3-3-3-3v4A10 10 0 002 12h2z">
+            </path>
+
+        </svg>
+
+      </button>
+
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-400">
+      Already have an account?
+      <a href="./index.html" class="text-indigo-400">Login</a>
+    </p>
+
+    <p id="message" class="text-center text-green-400 mt-4"></p>
+
+    <button id="resendBtn"
+      class="hidden mt-4 w-full rounded-md bg-gray-700 py-2 text-white hover:bg-gray-600">
+      Resend Verification Email
+    </button>
+
+  </div>
+</div>
+
+<script type="module" src="../js/register.js"></script>
+
+</body>
+</html>
