@@ -87,7 +87,7 @@ async function loginAdmin(email, password) {
         credentials: "include",
         body: JSON.stringify({ email, password })
       }),
-      10000
+     20000
     );
 
     let data = {};
@@ -118,7 +118,7 @@ async function loginAdmin(email, password) {
 }
 
 function redirectToDashboard() {
-  window.location.href = "/pages/admin-dashboard.html";
+  window.location.href = "./admin-dashboard.html";
 }
 
 function showError(message) {

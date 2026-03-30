@@ -103,7 +103,7 @@ async function loadAdmin() {
 
 // common redirect
 function redirectToLogin() {
-  window.location.href = "/pages/admin-Login.html";
+  window.location.href = "./admin-Login.html";
 }
 
 // server health
@@ -332,7 +332,7 @@ async function logoutAdmin() {
       return;
     }
 
-    window.location.href = "/pages/admin-Login.html";
+    window.location.href = "./admin-Login.html";
 
   } catch (error) {
   console.error(error);
@@ -392,7 +392,7 @@ async function deleteAccount() {
     }
 
     alert("Account deleted");
-    window.location.href = "/pages/admin-Login.html";
+    window.location.href = "./admin-Login.html";
 
   }catch (error) {
   console.error(error);

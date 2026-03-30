@@ -1,4 +1,4 @@
-//console.log("🚀 Dashboard JS loaded");
+console.log("Dashboard JS loaded");
 
 import { withTimeout } from "./timeout.js";
 import { CONFIG } from "./config.js";
