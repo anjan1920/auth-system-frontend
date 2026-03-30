@@ -372,7 +372,7 @@ async function deleteAccount() {
 
   try {
     const res = await withTimeout(
-      apiRequest(`${CONFIG.SERVER_URL}/api/v1/delete-me`, {
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/auth/delete-me`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
