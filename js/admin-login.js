@@ -109,7 +109,7 @@ async function loginAdmin(email, password) {
     } else if (err.message === "NETWORK") {
       showError("check your internet connection");
     } else {
-      showError("server error");
+      showError( `Error ${err.message}`);
     }
 
   } finally {
