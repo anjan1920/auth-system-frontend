@@ -25,7 +25,7 @@ async function init() {
 
   await Promise.all([
     checkAuth(),
-    new Promise(res => setTimeout(res, 1000))
+    new Promise(res => setTimeout(res, 500))
   ]);
 
   hidePageLoader();
@@ -38,7 +38,7 @@ async function checkAuth() {
         method: "GET",
         credentials: "include"
       }),
-      10000
+      5000
     );
 
     if (!res.ok) return;
