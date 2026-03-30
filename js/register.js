@@ -64,7 +64,7 @@ form.addEventListener("submit", async (e) => {
       message.textContent = "Didn't receive email? Click below to resend.";
 
     }else{
-      document.getElementById("errorMsg").textContent = data.message || "Registration failed";
+      document.getElementById("errorMsg").textContent = data.errors || "Registration failed";
     }
 
   } catch (err) {
