@@ -7,8 +7,11 @@
 
 <body class="h-full">
 
-<div id="loader" class="fixed inset-0 flex items-center justify-center bg-white z-50">
-  <div class="w-10 h-10 border-4 border-gray-300 border-t-amber-500 rounded-full animate-spin"></div>
+<div id="loader" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+  <div class="flex flex-col items-center gap-3">
+    <div class="w-10 h-10 border-4 border-gray-300 border-t-amber-500 rounded-full animate-spin"></div>
+    <p class="text-gray-300 text-sm">Checking session...</p>
+  </div>
 </div>
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -36,15 +39,17 @@
         class="block w-full rounded-md bg-white/5 px-3 py-2 text-white outline outline-white/10">
       </div>
 
-      <button type="submit"
-      class="w-full rounded-md bg-amber-500 py-2 text-white hover:bg-amber-400">
+      <button id="loginBtn" type="submit"
+      class="w-full rounded-md bg-amber-500 py-2 text-white hover:bg-amber-400 disabled:opacity-50">
         Sign in as Admin
       </button>
 
       <p class="mt-2 text-center text-sm text-gray-400">
         Forgot password?
         <a href="./forgot-password.html" class="text-amber-400">Reset here</a>
-        <p class="mt-2 text-center text-sm text-gray-400">
+      </p>
+
+      <p class="mt-2 text-center text-sm text-gray-400">
         Not an admin?
         <a href="./index.html" class="text-amber-400">Login here</a>
       </p>

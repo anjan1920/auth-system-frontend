@@ -11,6 +11,8 @@ let deleteAccountBtn;
 let loader;
 
 
+
+
 document.addEventListener("DOMContentLoaded", () => {
   //console.log(" DOM loaded - dashboard");
 
@@ -246,6 +248,8 @@ async function handleDeleteAccount() {
     btn.disabled = false;
   }
 }
+
+
 
 
 function redirectToLogin() {

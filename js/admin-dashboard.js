@@ -1,7 +1,9 @@
-
-// Prevent cached dashboard from showing after logout
+// prevent cached dashboard from showing after logout
 window.addEventListener("pageshow", function (event) {
-  if (event.persisted || performance.getEntriesByType("navigation")[0]?.type === "back_forward") {
+  if (
+    event.persisted ||
+    performance.getEntriesByType("navigation")[0]?.type === "back_forward"
+  ) {
     window.location.reload();
   }
 });
@@ -16,29 +18,53 @@ const adminName = document.getElementById("adminName");
 const displayBox = document.getElementById("displayBox");
 const pageBody = document.getElementById("pageBody");
 
+
+const globalLoader = document.getElementById("globalLoader");
+
+
+
+
 init();
 
 async function init() {
   await loadAdmin();
 }
 
-async function loadAdmin() {
-  try {
 
+
+function showGlobalLoader(message = "Loading...") {
+  if (!globalLoader) return;
+  globalLoader.classList.remove("hidden");
+  globalLoader.querySelector("p").textContent = message;
+}
+
+function hideGlobalLoader() {
+  if (!globalLoader) return;
+  globalLoader.classList.add("hidden");
+}
+
+
+async function loadAdmin() {
+
+  showGlobalLoader("Checking admin access...");
+
+  try {
     const res = await withTimeout(
-      apiRequest(
-        `${CONFIG.SERVER_URL}/api/v1/auth/current-user`,
-        {
-          method: "GET",
-          credentials: "include"
-        }
-      ),
-      8000 // timeout added
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/auth/current-user`, {
+        method: "GET",
+        credentials: "include"
+      }),
+      15000 
     );
 
+    if (res.status === 401) {
+      alert("Session expired. Please login again.");
+      return redirectToLogin();
+    }
+
     if (!res.ok) {
-      window.location.href = "./admin-login.html";
-      return;
+      alert("Unauthorized access");
+      return redirectToLogin();
     }
 
     let data = {};
@@ -46,19 +72,41 @@ async function loadAdmin() {
       data = await res.json();
     } catch {}
 
-    // show dashboard only after auth success
+    if (!data?.data || data.data.role !== "admin") {
+      alert("Access denied (Admin only)");
+      return redirectToLogin();
+    }
+
     pageBody.classList.remove("hidden");
-
-   // console.log(data);
-
     adminName.innerText = `Welcome ${data.data?.username || "Admin"}`;
 
-  } catch (error) {
-    window.location.href = "./admin-login.html";
+  }catch (error) {
+    console.error(error);
+
+    if (error.message === "TIMEOUT") {
+      displayBox.innerHTML = `
+        <p class="text-red-400">Server is slow (cold start). Try again.</p>
+      `;
+    } else if (error.message === "NETWORK") {
+      displayBox.innerHTML = `
+        <p class="text-red-400">Check your internet connection.</p>
+      `;
+    } else {
+      displayBox.innerHTML = `
+        <p class="text-red-400">Something went wrong.</p>
+      `;
+    }
+} finally {
+    hideGlobalLoader();
   }
 }
 
-//Server Health Check Section
+// common redirect
+function redirectToLogin() {
+  window.location.href = "/pages/admin-Login.html";
+}
+
+// server health
 document
   .getElementById("serverHealthBtn")
   .addEventListener("click", checkServerHealth);
@@ -68,26 +116,30 @@ async function checkServerHealth() {
   showBoxLoader("Checking server...");
 
   try {
-
     const res = await withTimeout(
-      apiRequest(
-        `${CONFIG.SERVER_URL}/api/v1/admin/healthcheck`,
-        { method: "GET", credentials: "include" }
-      ),
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/admin/healthcheck`, {
+        method: "GET",
+        credentials: "include"
+      }),
       8000
     );
-
-    if (!res.ok) {
-      displayBox.innerHTML = `
-        <p class="text-red-400">Failed to fetch server health.</p>
-      `;
-      return;
-    }
 
     let data = {};
     try {
       data = await res.json();
     } catch {}
+
+    if (res.status === 401) {
+      alert("Session expired");
+      return redirectToLogin();
+    }
+
+    if (!res.ok) {
+      displayBox.innerHTML = `
+        <p class="text-red-400">${data.message || "Failed to fetch server health."}</p>
+      `;
+      return;
+    }
 
     await delay(500);
 
@@ -95,7 +147,6 @@ async function checkServerHealth() {
 
     displayBox.innerHTML = `
       <h3 class="text-lg font-semibold mb-3">Server Health</h3>
-
       <p><b>Status:</b> ${health?.status?.server || "Running"}</p>
       <p><b>Message:</b> ${health?.message}</p>
       <p><b>Uptime:</b> ${health?.uptime}</p>
@@ -104,15 +155,17 @@ async function checkServerHealth() {
     `;
 
   } catch (error) {
+    console.error(error);
 
     displayBox.innerHTML = `
       <p class="text-red-400">Server not reachable.</p>
     `;
-
   }
 }
 
-//users Management Section
+
+// users list
+
 document
   .getElementById("checkUsersBtn")
   .addEventListener("click", loadUsers);
@@ -122,26 +175,30 @@ async function loadUsers() {
   showBoxLoader("Loading users...");
 
   try {
-
     const res = await withTimeout(
-      apiRequest(
-        `${CONFIG.SERVER_URL}/api/v1/admin/getAllUsers`,
-        { method: "GET", credentials: "include" }
-      ),
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/admin/getAllUsers`, {
+        method: "GET",
+        credentials: "include"
+      }),
       10000
     );
-
-    if (!res.ok) {
-      displayBox.innerHTML = `
-        <p class="text-red-400">Failed to load users.</p>
-      `;
-      return;
-    }
 
     let data = {};
     try {
       data = await res.json();
     } catch {}
+
+    if (res.status === 401) {
+      alert("Session expired");
+      return redirectToLogin();
+    }
+
+    if (!res.ok) {
+      displayBox.innerHTML = `
+        <p class="text-red-400">${data.message || "Failed to load users."}</p>
+      `;
+      return;
+    }
 
     await delay(500);
 
@@ -156,35 +213,44 @@ async function loadUsers() {
       <h3 class="text-lg font-semibold mb-3">
         Users (${data.totalUsers})
       </h3>
-
       <div class="space-y-2">
     `;
 
     users.forEach(user => {
-
       html += `
         <div class="border-b border-gray-700 pb-2">
           <p>UserName: ${user.username}</p>
           <p>Verified: ${user.isEmailVerified ? "✔ Yes" : "❌ No"}</p>
         </div>
       `;
-
     });
 
     html += `</div>`;
 
     displayBox.innerHTML = html;
 
-  } catch (error) {
+  }catch (error) {
+  console.error(error);
 
+  if (error.message === "TIMEOUT") {
     displayBox.innerHTML = `
-      <p class="text-red-400">Server error while fetching users.</p>
+      <p class="text-red-400">Server is slow (cold start). Try again.</p>
     `;
-
+  } else if (error.message === "NETWORK") {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Check your internet connection.</p>
+    `;
+  } else {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Something went wrong.</p>
+    `;
   }
 }
+}
 
-//change Password Section
+
+// change password
+
 document
   .getElementById("changePasswordBtn")
   .addEventListener("click", changePassword);
@@ -192,28 +258,19 @@ document
 async function changePassword() {
 
   const oldPassword = prompt("Enter current password:");
-
   if (!oldPassword) return;
 
   const newPassword = prompt("Enter new password:");
-
   if (!newPassword) return;
 
   try {
-
     const res = await withTimeout(
-      apiRequest(
-        `${CONFIG.SERVER_URL}/api/v1/auth/change-password`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            oldPassword,
-            newPassword
-          })
-        }
-      ),
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/auth/change-password`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ oldPassword, newPassword })
+      }),
       10000
     );
 
@@ -222,6 +279,11 @@ async function changePassword() {
       data = await res.json();
     } catch {}
 
+    if (res.status === 401) {
+      alert("Session expired");
+      return redirectToLogin();
+    }
+
     if (!res.ok) {
       alert(data.message || "Password change failed");
       return;
@@ -229,15 +291,26 @@ async function changePassword() {
 
     alert("Password changed successfully");
 
-  } catch (error) {
+  }catch (error) {
+  console.error(error);
 
-    console.error(error);
-    alert("Server error");
-
+  if (error.message === "TIMEOUT") {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Server is slow (cold start). Try again.</p>
+    `;
+  } else if (error.message === "NETWORK") {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Check your internet connection.</p>
+    `;
+  } else {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Something went wrong.</p>
+    `;
   }
 }
+}
 
-//login
+// logout
 
 document
   .getElementById("logoutBtn")
@@ -246,15 +319,11 @@ document
 async function logoutAdmin() {
 
   try {
-
     const res = await withTimeout(
-      apiRequest(
-        `${CONFIG.SERVER_URL}/api/v1/auth/logout`,
-        {
-          method: "POST",
-          credentials: "include"
-        }
-      ),
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/auth/logout`, {
+        method: "POST",
+        credentials: "include"
+      }),
       8000
     );
 
@@ -263,17 +332,29 @@ async function logoutAdmin() {
       return;
     }
 
-    window.location.href = "./admin-login.html";
+    window.location.href = "/pages/admin-Login.html";
 
   } catch (error) {
+  console.error(error);
 
-    console.error("Server error:", error);
-    alert("Server not reachable. Please try again.");
-
+  if (error.message === "TIMEOUT") {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Server is slow (cold start). Try again.</p>
+    `;
+  } else if (error.message === "NETWORK") {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Check your internet connection.</p>
+    `;
+  } else {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Something went wrong.</p>
+    `;
   }
 }
+}
 
-//delete Account Section
+
+// delete account
 document
   .getElementById("deleteAccountBtn")
   .addEventListener("click", deleteAccount);
@@ -287,23 +368,23 @@ async function deleteAccount() {
   if (!confirmDelete) return;
 
   const password = prompt("Enter password to confirm:");
-
   if (!password) return;
 
   try {
-
     const res = await withTimeout(
-      apiRequest(
-        `${CONFIG.SERVER_URL}/api/v1/delete-me`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password })
-        }
-      ),
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/delete-me`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      }),
       10000
     );
+
+    if (res.status === 401) {
+      alert("Session expired");
+      return redirectToLogin();
+    }
 
     if (!res.ok) {
       alert("Failed to delete account");
@@ -311,17 +392,28 @@ async function deleteAccount() {
     }
 
     alert("Account deleted");
+    window.location.href = "/pages/admin-Login.html";
 
-    window.location.href = "./admin-login.html";
+  }catch (error) {
+  console.error(error);
 
-  } catch (error) {
-
-    alert("Server error while deleting account");
-
+  if (error.message === "TIMEOUT") {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Server is slow (cold start). Try again.</p>
+    `;
+  } else if (error.message === "NETWORK") {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Check your internet connection.</p>
+    `;
+  } else {
+    displayBox.innerHTML = `
+      <p class="text-red-400">Something went wrong.</p>
+    `;
   }
 }
+}
 
-// Helper Functions
+// helper functions
 function showBoxLoader(message = "Loading...") {
 
   displayBox.classList.remove("hidden");
@@ -330,6 +422,7 @@ function showBoxLoader(message = "Loading...") {
     <div class="flex flex-col items-center justify-center min-h-[150px] space-y-3">
       <div class="w-8 h-8 border-4 border-gray-600 border-t-amber-500 rounded-full animate-spin"></div>
       <p class="text-gray-400">${message}</p>
+      <p class="text-xs text-gray-500">Server may take a few seconds...</p>
     </div>
   `;
 }
