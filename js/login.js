@@ -1,6 +1,6 @@
-console.log("Login page loaded");
-
 import { CONFIG } from "./config.js";
+import { withTimeout } from "./timeout.js";
+import { apiRequest } from "./api.js";
 
 let form;
 let loader;
@@ -8,103 +8,105 @@ let errorBox;
 let loginBtn;
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM loaded - login");
-
   form = document.getElementById("loginForm");
   loader = document.getElementById("loader");
   errorBox = document.getElementById("errorMsg");
-  loginBtn = document.querySelector("button[type='submit']"); 
+  loginBtn = document.querySelector("button[type='submit']");
 
- 
+  init();
 
-  // force hide loader
-  if (loader) {
-    loader.style.display = "none";
-    console.log("Loader hidden");
-  }
+  if (!form) return;
 
-  if (!form) {
-    console.error("Form NOT found ❌");
-    return;
-  }
-
-  // CLICK DEBUG
-  form.addEventListener("click", () => {
-    console.log("Form clicked ✅");
-  });
-
-  // SUBMIT DEBUG
   form.addEventListener("submit", handleLoginSubmit);
-
-  console.log("Event listener attached ✅");
 });
 
+async function init() {
+  showPageLoader();
 
-// submit handler
+  await Promise.all([
+    checkAuth(),
+    new Promise(res => setTimeout(res, 1000))
+  ]);
+
+  hidePageLoader();
+}
+
+async function checkAuth() {
+  try {
+    const res = await withTimeout(
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/auth/current-user`, {
+        method: "GET",
+        credentials: "include"
+      }),
+      10000
+    );
+
+    if (!res.ok) return;
+
+    const data = await res.json();
+
+    if (data?.success) {
+      window.location.href = "./dashboard.html";
+    }
+  } catch (err) {}
+}
+
 async function handleLoginSubmit(e) {
   e.preventDefault();
-
- // console.log("FORM SUBMIT TRIGGERED");
 
   clearError();
 
   const email = document.getElementById("email")?.value;
   const password = document.getElementById("password")?.value;
 
-  console.log("Email:", email);
-  console.log("Password:", password);
-
   await loginUser(email, password);
 }
 
-
-// login function
 async function loginUser(email, password) {
-
-  setLoadingState(true); 
+  setLoadingState(true);
 
   try {
-    //console.log(" Sending login request...");
-
-    const res = await fetch(`${CONFIG.SERVER_URL}/api/v1/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({ email, password })
-    });
-
-    //console.log(" Response received:", res.status);
+    const res = await withTimeout(
+      apiRequest(`${CONFIG.SERVER_URL}/api/v1/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({ email, password })
+      }),
+      20000
+    );
 
     let data = {};
     try {
       data = await res.json();
     } catch {}
 
-    //console.log(" Data:", data);
-
     if (!res.ok) {
       showError(data.message || "Invalid credentials");
       return;
     }
 
-    //console.log("Login success → redirect");
-
     window.location.href = "./dashboard.html";
 
   } catch (err) {
 
-    //console.error(" Login error:", err);
-    showError("Something went wrong");
+    if (err.message === "TIMEOUT") {
+      showError("Server is waking up. Try again in a few seconds.");
+    } 
+    else if (err.message === "Failed to fetch") {
+      showError("Check your internet connection.");
+    } 
+    else {
+      showError("Login failed");
+    }
 
   } finally {
-    setLoadingState(false); //  added (IMPORTANT)
+    setLoadingState(false);
   }
 }
 
-
-// loading UI (ONLY ADDITION)
 function setLoadingState(isLoading) {
   if (!loginBtn) return;
 
@@ -116,12 +118,18 @@ function setLoadingState(isLoading) {
     `;
   } else {
     loginBtn.disabled = false;
-    loginBtn.innerHTML = "Sign in"; // same as your HTML
+    loginBtn.innerHTML = "Sign in";
   }
 }
 
+function showPageLoader() {
+  if (loader) loader.style.display = "flex";
+}
 
-// ui helpers
+function hidePageLoader() {
+  if (loader) loader.style.display = "none";
+}
+
 function showError(message) {
   if (!errorBox) return;
   errorBox.textContent = message;
